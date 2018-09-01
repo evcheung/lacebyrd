@@ -1,0 +1,224 @@
+<section class="cart" data-section-id="{{ section.id }}" data-section-type="cart-template">
+  <div class="wrapper">
+
+    <header class="content-util">
+    {% include 'breadcrumb' %}
+    {% include 'social-icons' %}
+    </header>
+
+    <div class="cart-container">
+      <header class="cart-header">
+        <h1></h1>
+      </header>
+      {% if cart.item_count > 0 %}
+        <div class="cart-list">
+          <form action="/cart" method="post" novalidate id="cart-form "class="cart-form">
+            <div class="cart-items">
+              <div class="label-row">
+                <div class="grid lb-playfair cart-items-titles">
+                  <div class="td cart-item-product">
+                    {{ 'cart.label.product' | t }}
+                  </div>
+                  <div class="td cart-item-price">
+                    {{ 'cart.label.price' | t }}
+                  </div>
+                  <div class="td cart-item-quantity">
+                    {{ 'cart.label.quantity' | t }}
+                  </div>
+                  <div class="td cart-item-total">
+                    {{ 'cart.label.total' | t }}
+                  </div>
+                </div>
+              </div>
+
+              {% comment %}
+                Loop through products in the cart
+              {% endcomment %}
+              {% for item in cart.items %}
+                <div class="cart-item">
+                  <div class="grid">
+                    <div class="td cart-item-product">
+                      <div class="cart-item-image">
+
+                        {%- assign image = item.image -%}
+                        <a  href="{{ item.url | within: collections.all }}" class="card__image-wrapper" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%">
+                          {% assign image_widths = '120,240,394,590' %}
+                          {% include 'theme-rias' %}
+                          <img class="card__image lazyload fade-in"
+                            data-src="{{ image_url_pattern }}"
+                            data-widths="[{{ image_widths }}]"
+                            data-aspectratio="{{ image.aspect_ratio }}"
+                            data-sizes="auto"
+                            alt="{{ image.alt | escape }}">
+                          <noscript>
+                            <img class="card__image" src="{{ image | img_url: '120x' }}" alt="{{ image.alt | escape }}">
+                          </noscript>
+                        </a>
+
+                      </div>
+
+                      <div class="cart-item-title lb-worksans">
+                        <a href="{{ item.url | within: collections.all | upcase }}" class="title lb-playfair">
+                          {{ item.product.title | upcase}}
+                        </a>
+                        
+                       
+                        {% if section.settings.show_vendors %}
+						<!-- <span class="vendor">{{ item.vendor }}</span> -->
+                        {% endif %}
+                        
+                   	<p class="product-selection">{% if item.product.handle == 'styling-set-3-ring-boxes' %} Select Ring Box Color 1: {% else %}MONOGRAM:{% endif %} {{item.variant.option1 | upcase}}</p>
+					{% if item.product.handle == 'styling-set-3-ring-boxes' %} {% else %}<p class="product-selection">FOIL COLOR: {{item.variant.option2 | upcase}}</p>{% endif %}
+                     {% if item.product.handle == 'styling-set-3-ring-boxes' %} <p class="product-selection">Select Ring Box Color 2: {{item.properties['Select Ring Box Color 2'] | upcase}}</p>{% endif %}   
+                        {% if item.product.handle == 'styling-set-3-ring-boxes' %} <p class="product-selection">Select Ring Box Color 3: {{item.properties['Select Ring Box Color 3'] | upcase}}</p>{% endif %}   
+                       {% if item.product.handle == 'styling-set-3-ring-boxes' %}
+                        {% else %}
+                        {% for property in item.properties %}
+                          {% if property.last != '' %}
+                        	<p id="cart-engraving" class="product-selection">CHARACTER: {{property.last | upcase }}</p>
+                          {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                      </div>
+
+                    </div>
+                    <div class="td cart-item-price">
+                      <span class="money lb-playfair ">{{ item.price | money }}</span>
+                    </div>
+                    <div class="td cart-item-quantity">
+                      <span>
+                        <div class="quantity-select" data-inventory-policy="{{ item.variant.inventory_policy }}" data-inventory-quanity="{{ item.variant.inventory_quantity }}">
+                          <div class="button-wrapper">
+                            <button class="adjust adjust-minus">-</button>
+                          </div>
+                          <div class="input-wrapper">
+                            <input type="text" class="quantity" min="1" pattern="[0-9]*" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" >
+                          </div>
+                          <div class="button-wrapper">
+                            <button class="adjust adjust-plus">+</button>
+                          </div>
+                        </div>
+                      </span>
+                      <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="lb-worksans remove">{{ 'cart.general.remove' | t | upcase }}</a>
+                    </div>
+                    <div class="td cart-item-total">
+                      <span class="money lb-playfair ">{{ item.line_price | money }}</span>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <hr class="subtotal-line">
+            <p class="subtotal">
+              <span class="label lb-worksans lb-medium">{{ 'cart.general.subtotal' | t | upcase }}</span>
+              <span class="price money lb-playfair">{{ cart.total_price | money }}</span>
+            </p>
+			<div class="agree-container lb-worksans">
+              <p class="lb-thin">By checking 'I AGREE', you are confirming that you have selected the correct initial, monogram style, and foil color. All monogrammed ring boxes are non-refundable. For international orders, you acknowledge that you will be charged in USD at the most current exchange rate.</p>
+              <input type="checkbox" id="agree" />
+              <label class="lb-medium" for="agree" > I AGREE </label>
+            </div>
+            <div class="grid under-agree">
+              
+              <div class="cart-notes">
+                {% comment %}
+                  Optional, add a textarea for special notes
+                    - Your theme settings can turn this on or off. Default is on.
+                    - Make sure you have name="note" for the message to be submitted properly
+                {% endcomment %}
+                {% if section.settings.show_notes %}
+                  <label for="CartSpecialInstructions">{{ 'cart.general.note' | t }}</label>
+                  <textarea name="note" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+                {% endif %}
+              </div>
+              <div class="cart-checkout">
+                <p class="checkout-disclaimer shipping-at-checkout lb-light-grey lb-playfair">
+                  {{ 'cart.general.shipping_at_checkout' | t | upcase }}
+                  <br><br>
+                  {{ 'cart.general.currency_at_checkout_static' | t | upcase }}
+                </p>
+<!--                 
+				{% if settings.show_multiple_currencies %}
+                  <p class="checkout-disclaimer currency-at-checkout lb-light-grey lb-playfair">
+                    {{ 'cart.general.currency_at_checkout_html' | t: shop_name: shop.name, shop_currency: shop.currency | upcase }}
+                  </p>
+                
+               {% endif %} 
+-->
+                <input type="submit" name="update" class="button lb-worksans outline checkout-button" value="{{ 'cart.general.update' | t }}">
+                <input type="submit" name="checkout" style="color: #ffffff" class="button lb-worksans solid checkout-button" value="{{ 'cart.general.checkout' | t }}">
+
+                {% if additional_checkout_buttons %}
+                  <div class="additional-checkout-buttons">{{ content_for_additional_checkout_buttons }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+          </form>
+        </div>
+      {% else %}
+        {% comment %}
+          The cart is empty
+        {% endcomment %}
+        <p>{{ 'cart.general.empty' | t }}<br>
+        {{ 'cart.general.continue_browsing_html' | t }}</p>
+
+        {% unless section.settings.extra_featured_products == blank %}
+          {% assign collection_limit = 4 | plus:0 %}
+          <div class="simple-collection layout-{{ collection_limit }}">
+            <div class="wrapper">
+              <header>
+                <h4>{{ collections[section.settings.extra_featured_products].title }}</h4>
+                <a href="{{ collections[section.settings.extra_featured_products].url }}" class="button outline">{{ 'collections.general.all_of_collection' | t: collection: collections[section.settings.extra_featured_products].title }}</a>
+              </header>
+              <div class="product-container">
+                {% for product in collections[section.settings.extra_featured_products].products limit:collection_limit %}
+                  {% include 'product-grid-item' %}
+                {% else %}
+                  {% for i in (1..collection_limit) %}
+                    {% include 'placeholder-product-grid-item' %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endunless %}
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Cart page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_notes",
+      "label": "Enable order notes",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendors",
+      "label": "Show product vendors",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Empty cart"
+    },
+    {
+      "type": "collection",
+      "id": "extra_featured_products",
+      "label": "Empty cart collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "variant_rollover",
+      "label": "Show variant image on rollover",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
