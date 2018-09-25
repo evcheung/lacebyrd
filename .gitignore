@@ -1,3 +1,4 @@
 config.yml
 config/settings_data.json
 images/
+node_modules

@@ -1,0 +1,36 @@
+<div class="{% if section.settings.full_width %}contain-full-width{% else %}contain-site-width{% endif %} no-padding">
+	<div class="heroContainer">
+		<div class="pinkbox">
+			<p id="heroText">A romantic expression of your love</p>
+			<a href="https://lacebyrd.com/collections/ring-boxes" class="shopCTA">
+				Shop the Collection
+			</a>
+		</div>
+		<div class="heroImage">
+			<img src={{ section.settings.hero | img_url:'320x380', crop: 'center'}}  alt="">
+		</div>
+	</div>
+
+	<div class="freeShippingContainer">
+		{{ 'freeshipping.jpg' | asset_url | img_tag: 'Free shipping on all US orders', 'freeShipping' }}
+	</div>
+</div> 
+
+{% schema %}
+  {
+    "name": "Hero Image",
+    "settings": [
+    {
+		"id": "hero",
+		"type": "image_picker",
+		"label": "Insert homepage image here"
+    }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}
