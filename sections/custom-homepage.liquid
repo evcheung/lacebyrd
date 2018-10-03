@@ -7,13 +7,14 @@
 			</a>
 		</div>
 		<div class="heroImage">
-			<img src={{ section.settings.hero | img_url:'320x380', crop: 'center'}}  alt="">
+			<img src={{ section.settings.hero | img_url:'1200x1425', crop: 'center' }} alt="">
 		</div>
 	</div>
 
-	<div class="freeShippingContainer">
+	<a href="https://lacebyrd.com/pages/faq"><div class="freeShippingContainer">
 		{{ 'freeshipping.jpg' | asset_url | img_tag: 'Free shipping on all US orders', 'freeShipping' }}
 	</div>
+	</a>
 </div> 
 
 {% schema %}
